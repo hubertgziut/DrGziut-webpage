@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useLang, useT } from './i18n';
 import { common, nav, type BiText } from './data';
+import { ScrollBackgroundProvider, SectionBackground, assetUrl } from './ScrollBackgrounds';
 
 export const A = ({ children, to, className }: { children: ReactNode; to: string; className?: string }) => (
   <Link className={className} to={to}>{children}</Link>
@@ -39,11 +40,12 @@ export function Nav() {
   return <>
     <header className={`nav ${scrolled ? 'scrolled' : ''}`}>
       <div className="nav-inner">
-        <Link to="/" className="nav-logo">Dr<span>Gziut</span></Link>
+        <Link to="/" className="nav-logo"><img src={assetUrl('/assets/brand/logo-light.png')} alt="DrGziut" style={{ height: 40, width: 'auto', display: 'block' }} /></Link>
         <nav className="nav-links">
           {links.slice(1).map(([to, label]) => <NavLink key={to} to={to}>{t(label)}</NavLink>)}
         </nav>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <a className="nav-phone" href={'tel:+48' + '533210115'}>+48 533 210 115</a>
           <div className="lang-switch" aria-label="Language">
             <button className={lang === 'pl' ? 'active' : ''} onClick={() => setLang('pl')}>PL</button>
             <button className={lang === 'en' ? 'active' : ''} onClick={() => setLang('en')}>EN</button>
@@ -98,14 +100,17 @@ export function Footer() {
 
 export function PageHero({ kicker, title, lead, image = '/assets/precision.jpg' }: { kicker: BiText; title: BiText; lead: BiText; image?: string }) {
   const t = useT();
-  return <section className="page-hero">
-    <div className="page-hero-bg"><img src={image} alt="" /></div>
-    <div className="container">
-      <div className="breadcrumb"><Link to="/">DrGziut</Link> / {t(kicker)}</div>
-      <Reveal><p className="kicker">{t(kicker)}</p><h1 className="h-display" style={{ maxWidth: 800 }}>{t(title)}</h1></Reveal>
-      <Reveal className="reveal-d1"><p className="lead" style={{ marginTop: 28 }}>{t(lead)}</p></Reveal>
-    </div>
-  </section>;
+  return <ScrollBackgroundProvider>
+    <SectionBackground id="page-hero" src={image}>
+      <section className="page-hero">
+        <div className="container">
+          <div className="breadcrumb"><Link to="/">DrGziut</Link> / {t(kicker)}</div>
+          <Reveal><p className="kicker">{t(kicker)}</p><h1 className="h-display" style={{ maxWidth: 800 }}>{t(title)}</h1></Reveal>
+          <Reveal className="reveal-d1"><p className="lead" style={{ marginTop: 28 }}>{t(lead)}</p></Reveal>
+        </div>
+      </section>
+    </SectionBackground>
+  </ScrollBackgroundProvider>;
 }
 
 export function FAQ({ items }: { items: { q: BiText; a: BiText }[] }) {
@@ -125,7 +130,7 @@ export function CTA({ title, copy, image = '/assets/clinic.jpg' }: { title: BiTe
   const t = useT();
   return <section className="section" style={{ paddingTop: 0 }}>
     <div className="container"><div className="cta-band">
-      <div className="cta-band-bg"><img src={image} alt="" /></div>
+      <div className="cta-band-bg"><img src={assetUrl(image)} alt="" /></div>
       <p className="kicker">{t({ pl: 'Pierwszy krok', en: 'First step' })}</p>
       <h2 className="h-section">{t(title)}</h2>
       {copy && <p className="lead" style={{ margin: '18px auto 30px' }}>{t(copy)}</p>}
@@ -141,16 +146,16 @@ export function ContactForm() {
   if (sent) return <div className="card" style={{ textAlign: 'center', padding: 48 }}><p className="kicker">{t({ pl: 'Dziękujemy', en: 'Thank you' })}</p><h3>{t({ pl: 'Wiadomość została przygotowana', en: 'Your message has been prepared' })}</h3><p>{t({ pl: 'Formularz demonstracyjny — przed publikacją podłączymy bezpieczną obsługę zgłoszeń.', en: 'Demonstration form — before publishing, we will connect secure enquiry handling.' })}</p></div>;
   return <form className="form" onSubmit={submit}>
     <div className="form-row">
-      <div className="field"><label>{t({ pl: 'Imię', en: 'First name' })}</label><input required autoComplete="given-name" /></div>
-      <div className="field"><label>{t({ pl: 'Nazwisko', en: 'Last name' })}</label><input required autoComplete="family-name" /></div>
+      <div className="field"><label>{t({ pl: 'Imię', en: 'First name' })}</label><input name="firstName" required autoComplete="given-name" /></div>
+      <div className="field"><label>{t({ pl: 'Nazwisko', en: 'Last name' })}</label><input name="lastName" required autoComplete="family-name" /></div>
     </div>
     <div className="form-row">
-      <div className="field"><label>{t({ pl: 'Telefon', en: 'Phone' })}</label><input type="tel" autoComplete="tel" /></div>
-      <div className="field"><label>E-mail</label><input type="email" required autoComplete="email" /></div>
+      <div className="field"><label>{t({ pl: 'Telefon', en: 'Phone' })}</label><input name="phone" type="tel" autoComplete="tel" /></div>
+      <div className="field"><label>E-mail</label><input name="email" type="email" required autoComplete="email" /></div>
     </div>
-    <div className="field"><label>{t({ pl: 'Temat', en: 'Subject' })}</label><select defaultValue=""><option value="" disabled>{t({ pl: 'Wybierz temat', en: 'Select a subject' })}</option><option>{t(nav.consultation)}</option><option>{t(nav.surgery)}</option><option>{t(nav.aesthetic)}</option><option>{t({ pl: 'Inne', en: 'Other' })}</option></select></div>
-    <div className="field"><label>{t({ pl: 'Wiadomość', en: 'Message' })}</label><textarea placeholder={t({ pl: 'Nie przesyłaj numeru PESEL, dokumentacji ani danych wrażliwych.', en: 'Please do not send personal ID numbers, medical records or sensitive data.' })} /></div>
-    <label className="check"><input type="checkbox" required /><span>{t({ pl: 'Wyrażam zgodę na kontakt w celu obsługi mojego zapytania.', en: 'I consent to being contacted in order to handle my enquiry.' })}</span></label>
+    <div className="field"><label>{t({ pl: 'Temat', en: 'Subject' })}</label><select name="subject" defaultValue=""><option value="" disabled>{t({ pl: 'Wybierz temat', en: 'Select a subject' })}</option><option>{t(nav.consultation)}</option><option>{t(nav.surgery)}</option><option>{t(nav.aesthetic)}</option><option>{t({ pl: 'Inne', en: 'Other' })}</option></select></div>
+    <div className="field"><label>{t({ pl: 'Wiadomość', en: 'Message' })}</label><textarea name="message" placeholder={t({ pl: 'Nie przesyłaj numeru PESEL, dokumentacji ani danych wrażliwych.', en: 'Please do not send personal ID numbers, medical records or sensitive data.' })} /></div>
+    <label className="check"><input name="consent" type="checkbox" required /><span>{t({ pl: 'Wyrażam zgodę na kontakt w celu obsługi mojego zapytania.', en: 'I consent to being contacted in order to handle my enquiry.' })}</span></label>
     <button className="btn btn-solid" style={{ justifySelf: 'start' }}>{t({ pl: 'Wyślij zapytanie', en: 'Send enquiry' })}</button>
   </form>;
 }
