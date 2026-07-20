@@ -13,7 +13,7 @@ function ScrollTop() {
 }
 
 function App() {
-  return <LanguageProvider><BrowserRouter><ScrollTop /><Nav /><main>
+  return <LanguageProvider><BrowserRouter basename={import.meta.env.BASE_URL}><ScrollTop /><Nav /><main>
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/chirurgia-plastyczna" element={<SurgeryPage />} />
