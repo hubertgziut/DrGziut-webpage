@@ -11,6 +11,18 @@
     <meta property="og:description" content="Specjalista chirurgii plastycznej w Szczecinie. Indywidualna kwalifikacja i plan postępowania." />
     <title>lek. Hubert Gziut — chirurgia plastyczna i medycyna estetyczna</title>
     <script>
+      (function (location) {
+        if (location.search[1] === '/') {
+          var decoded = location.search
+            .slice(1)
+            .split('&')
+            .map(function (value) { return value.replace(/~and~/g, '&'); })
+            .join('?');
+          window.history.replaceState(null, '', location.pathname.slice(0, -1) + decoded + location.hash);
+        }
+      }(window.location));
+    </script>
+    <script>
       try {
         if (window.localStorage.getItem('drgziut-language') === 'en') {
           document.documentElement.lang = 'en';

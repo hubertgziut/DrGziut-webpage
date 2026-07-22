@@ -1,55 +1,84 @@
-# DrGziut — immersive physician website
+# DrGziut — wielopodstronowy serwis lekarza
 
-Dwujęzyczna, jednoekranowa narracja dla lek. Huberta Gziuta, specjalisty chirurgii plastycznej w Szczecinie, oferującego również konsultacje z zakresu medycyny estetycznej.
+Dwujęzyczny serwis lek. Huberta Gziuta, specjalisty chirurgii plastycznej w Szczecinie. Aplikacja rozdziela chirurgię plastyczną, medycynę estetyczną, procedury oraz strony informacyjne na osobne trasy.
 
-## Stack i uruchomienie
+## Stack
 
 - React 18 + TypeScript + Vite
-- natywna nawigacja kotwicowa, bez routera
-- sceny scroll-driven oparte na `IntersectionObserver` i parallax ograniczony przez `requestAnimationFrame`
-- Playwright dla QA funkcjonalnego, dostępnościowego i responsywnego
-- baza GitHub Pages: `/DrGziut-webpage/`
+- React Router 6
+- Playwright
+- GitHub Pages
+
+## Uruchomienie
 
 ```bash
 npm install
 npm run dev
+```
+
+Build produkcyjny:
+
+```bash
 npm run build
+npm run preview
+```
+
+Pełna walidacja tras i interakcji:
+
+```bash
 npm run test:smoke
 ```
 
-Pierwsze lokalne uruchomienie Playwright może wymagać:
+## Architektura informacji
 
-```bash
-npx playwright install chromium
+```text
+/
+├── chirurgia-plastyczna/
+│   ├── plastyka-powiek/
+│   ├── lifting-twarzy/
+│   ├── rynoplastyka/
+│   ├── chirurgia-piersi/
+│   ├── abdominoplastyka/
+│   └── liposukcja/
+├── medycyna-estetyczna/
+│   ├── toksyna-botulinowa/
+│   ├── laseroterapia/
+│   ├── radiofrekwencja-mikroiglowa/
+│   ├── biostymulacja/
+│   ├── leczenie-blizn/
+│   └── wolumetria/
+├── lekarz/
+├── konsultacja/
+├── cennik/
+├── faq/
+└── kontakt/
 ```
 
-`npm run test:smoke` wykonuje build, serwuje gotowy bundle bezpośrednio w kontrolowanym kontekście testowym, sprawdza szerokości 360, 390, 768 i 1440 px oraz zapisuje zrzuty w `artifacts/`.
+Szczegółowe decyzje produktowe i techniczne: [`docs/site-architecture.md`](docs/site-architecture.md).
 
-## Pochodzenie treści i materiałów
+## Struktura kodu
 
-- `public/assets/brand/doctor-hubert.jpg` to autentyczny, zweryfikowany wizualnie kadr przedstawiający wyłącznie Huberta Gziuta; pliku nie należy zastępować syntetycznym portretem.
-- Dane lekarza, NPWZ, zakres edukacji, telefon, e-mail i adres odpowiadają zaakceptowanej treści projektu.
-- `hero.jpg`, `clinic.jpg`, `silk.jpg`, `precision.jpg`, `bg-surgery.jpg`, `bg-aesthetic.jpg` i `bg-tech.jpg` to odziedziczone z przywróconego projektu, filmowe materiały koncepcyjne bez osób. Przed publikacją należy potwierdzić ich ostateczną licencję i zgodę na użycie.
-- Logotypy pochodzą z odziedziczonego zestawu marki.
-- Pozycje cenowe są ograniczone do zachowanego cennika źródłowego i prezentowane jako orientacyjne „od”; wymagają potwierdzenia przed publikacją.
+- `src/content/site.ts` — treści PL/EN, procedury, relacje, ceny i SEO,
+- `src/app/router.tsx` — mapa tras,
+- `src/components/SiteLayout.tsx` — header, menu desktop/mobile, route focus i footer,
+- `src/pages/` — layouty strony głównej, kategorii, procedur i stron informacyjnych,
+- `src/components/Seo.tsx` — title, description, canonical, Open Graph i robots,
+- `public/404.html` — obsługa głębokich linków GitHub Pages,
+- `tests/smoke.spec.ts` — macierz tras, dostępność, formularz, SEO i responsive QA.
 
-## Zasada „no women / no before-after”
+## Obrazy
 
-Projekt nie zawiera wizerunków kobiet, par, pacjentów ani galerii przed/po. Dotyczy to również zasobów nieużywanych, nazw plików, tekstów alternatywnych i teł CSS. Test smoke wymusza zamkniętą listę dozwolonych plików graficznych. Nie należy dodawać fotografii rezultatów leczenia.
+Publiczna allowlista obrazów znajduje się w `public/assets/`. Jedyny portret osobowy używany w serwisie przedstawia lek. Huberta Gziuta. Serwis nie wykorzystuje zdjęć before/after ani sztucznie generowanych rezultatów zabiegów.
 
-## Formularz demonstracyjny
+## Treści medyczne
 
-Formularz działa wyłącznie w lokalnym stanie interfejsu: nie wysyła, nie zapisuje i nie przetwarza danych. Komunikaty przed i po zatwierdzeniu wyraźnie informują o trybie demonstracyjnym. Nie należy wpisywać numeru PESEL, dokumentacji medycznej, skanów ani innych danych wrażliwych.
+- mają charakter edukacyjny,
+- nie zastępują konsultacji,
+- nie gwarantują efektu ani przebiegu gojenia,
+- wskazują na konieczność indywidualnej kwalifikacji,
+- ceny są orientacyjne,
+- formularz kontaktowy jest demonstracyjny i nie wysyła danych.
 
-## Lista przed publikacją
+## GitHub Pages
 
-- podłączyć zaakceptowany, szyfrowany kanał obsługi zgłoszeń albo pozostawić tylko bezpośredni telefon i e-mail;
-- przygotować obowiązek informacyjny, politykę prywatności, podstawę prawną zgód i ewentualny mechanizm cookies zgodny z RODO;
-- przeprowadzić przegląd prawny treści medycznych i oznaczeń reklamowych;
-- ponownie potwierdzić dane lekarza, adres, zakres procedur i ceny;
-- potwierdzić licencje wszystkich grafik i fontów;
-- skonfigurować domenę, canonical URL, finalne metadane społecznościowe i analitykę dopiero po uzyskaniu wymaganych zgód;
-- podłączyć bezpieczny backend tylko po ustaleniu retencji, kontroli dostępu i procedury obsługi danych;
-- wykonać końcowy audyt WCAG 2.1 AA na środowisku produkcyjnym.
-
-Treści strony mają charakter informacyjny i nie zastępują indywidualnej konsultacji lekarskiej.
+Vite używa bazy `/DrGziut-webpage/`. Znane trasy obsługuje React Router, a bezpośrednie wejścia są odtwarzane przez `public/404.html` i skrypt w `index.html`. Publikacja odbywa się przez workflow w `.github/workflows/deploy.yml`.
