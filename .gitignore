@@ -7,3 +7,7 @@ artifacts/
 .env
 .env.*
 !.env.example
+
+# Hermes Evolution local runtime; only reviewed configuration is versioned.
+.hermes-evolution/*
+!.hermes-evolution/EVOLUTION_CONFIG.yaml

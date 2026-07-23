@@ -1,0 +1,66 @@
+version: 1
+project_id: drgziut-webpage
+target: ui_ux_frontend
+mode: continuous_with_approval
+unlimited_cycles: true
+max_cycles_per_invocation: 1
+continue_only_after_explicit_user_request: true
+
+limits:
+  max_parallel_analysts: 3
+  max_parallel_writers: 1
+  max_proposals_per_cycle: 5
+  cycle_timeout_minutes: 45
+
+implementation:
+  internal_workers: true
+  external_swarm_optional: true
+  workspace: git_worktree
+  worktree_required: true
+  max_parallel_writers: 1
+  author_cannot_integrate: true
+
+independent_review_required: true
+require_user_approval: true
+require_visual_approval: true
+require_separate_deployment_approval: true
+approvals:
+  bind_to_proposal_id: true
+  bind_to_visual_spec_id: true
+  bind_to_target_commit: true
+  expire_on_target_commit_change: true
+  expire_on_asset_or_scope_change: true
+  visual_author_cannot_approve: true
+  release_approval_required_before_main_push: true
+
+privacy:
+  runtime_artifacts_local_only: true
+  forbid_patient_data: true
+  forbid_form_payloads: true
+  forbid_secrets: true
+  sanitized_git_records_dir: docs/evolution
+
+production_url: https://hubertgziut.github.io/DrGziut-webpage/
+source_repository: /Users/hubert/Projects/DrGziut-webpage
+
+viewports:
+  mobile: [360, 390]
+  tablet: [768, 1024]
+  desktop: [1440]
+
+languages: [pl, en]
+
+quality_gates:
+  - npm_run_build
+  - npm_run_test_smoke
+  - git_diff_check
+  - production_dependency_audit
+  - browser_console_and_network
+  - responsive_overflow
+  - keyboard_and_focus
+  - prefers_reduced_motion
+  - visual_regression
+  - asset_allowlist_and_pixel_review
+  - cautious_medical_claims
+  - deep_link_and_404_fallback
+  - demo_form_no_network_or_storage
