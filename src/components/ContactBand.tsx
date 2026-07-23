@@ -4,17 +4,18 @@ import { pageContent, siteContent, staticPaths } from "../content/site";
 import { useT } from "../i18n";
 
 type ContactBandProps = Readonly<{
+  id?: string;
   title?: BiText;
   text?: BiText;
   cta?: BiText;
 }>;
 
-export default function ContactBand({ title, text, cta }: ContactBandProps) {
+export default function ContactBand({ id, title, text, cta }: ContactBandProps) {
   const t = useT();
   const copy = pageContent.contactBand;
 
   return (
-    <section className="contact-band editorial-section" aria-labelledby="contact-band-title">
+    <section id={id} className="contact-band editorial-section" aria-labelledby="contact-band-title" tabIndex={id ? -1 : undefined}>
       <div>
         <div className="chapter-label">
           <span aria-hidden="true">→</span>

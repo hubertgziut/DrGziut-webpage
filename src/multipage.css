@@ -396,3 +396,204 @@ main:focus,
   .desktop-offer-trigger span,
   .faq-item > button i { transition: none; }
 }
+
+/* Hybrid H1 — Editorial Compact × Guided Consultation */
+:root { --faint: #787b75; }
+.procedure-hero-guide { display: grid; gap: .45rem; }
+.procedure-hero-guide span { color: var(--sage); font: 500 1.08rem/1 var(--serif); }
+.procedure-hero-guide strong { color: var(--ivory); font: 600 .67rem/1.45 var(--sans); letter-spacing: .09em; text-transform: uppercase; }
+
+.procedure-local-nav {
+  position: sticky;
+  z-index: 45;
+  top: 84px;
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: minmax(10rem, .36fr) minmax(0, 1.64fr);
+  align-items: stretch;
+  border-block: 1px solid var(--line);
+  background: rgba(8, 10, 9, .96);
+  backdrop-filter: blur(18px);
+}
+.procedure-local-nav::before,
+.procedure-local-nav::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  width: 4rem;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+.procedure-local-nav::before { left: max(10rem, 18vw); background: linear-gradient(90deg, rgba(8, 10, 9, 1), transparent); }
+.procedure-local-nav::after { right: 0; background: linear-gradient(270deg, rgba(8, 10, 9, 1), transparent); }
+.procedure-local-nav[data-at-start="true"]::before,
+.procedure-local-nav[data-at-end="true"]::after { opacity: 0; }
+.procedure-local-nav-label {
+  display: flex;
+  align-items: center;
+  padding-inline: var(--page-gutter);
+  border-right: 1px solid var(--line);
+  color: var(--faint);
+  font: 600 .6rem/1 var(--sans);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.procedure-local-nav-track {
+  min-width: 0;
+  display: flex;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.procedure-local-nav-track::-webkit-scrollbar { display: none; }
+.procedure-local-nav a {
+  min-width: 9rem;
+  min-height: 60px;
+  display: inline-flex;
+  flex: 1 0 auto;
+  align-items: center;
+  gap: .7rem;
+  padding: .85rem 1.25rem;
+  border-right: 1px solid var(--line);
+  color: var(--muted);
+  font: 600 .64rem/1 var(--sans);
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  scroll-snap-align: start;
+}
+.procedure-local-nav a:hover,
+.procedure-local-nav a:focus-visible { color: var(--ivory); background: rgba(170, 183, 162, .07); }
+.procedure-local-nav a span { color: var(--brass); font: 500 .65rem/1 var(--serif); }
+#ocena,
+#zakres,
+#opieka,
+#cena,
+#konsultacja { scroll-margin-top: 10.5rem; }
+.procedure-overview .intro-grid p,
+.procedure-fact-list p,
+.procedure-safety > div > p { max-width: 68ch; }
+
+.faq-section { grid-template-columns: minmax(15rem, .58fr) minmax(0, 1.42fr); align-items: start; }
+.faq-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  align-self: start;
+}
+.faq-filters button {
+  min-height: 44px;
+  padding: .7rem 1rem;
+  border: 1px solid var(--line2);
+  color: var(--muted);
+  background: transparent;
+  font: 600 .62rem/1 var(--sans);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.faq-filters button[aria-pressed="true"] { border-color: var(--sage); color: var(--ink); background: var(--sage); }
+.faq-filters button:hover,
+.faq-filters button:focus-visible { border-color: var(--brass); color: var(--ivory); }
+.faq-groups { grid-column: 2; grid-row: 1 / span 2; }
+.faq-item > button { min-height: 76px; }
+
+.contact-page { align-items: start; }
+.contact-page .contact-copy { position: sticky; top: 11rem; }
+.contact-flow { display: grid; gap: 1.25rem; }
+.contact-privacy-note {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(189, 155, 96, .42);
+  background: rgba(189, 155, 96, .07);
+}
+.contact-privacy-note > span {
+  width: 1.7rem;
+  height: 1.7rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--brass);
+  border-radius: 50%;
+  color: var(--brass);
+  font: 600 .72rem/1 var(--serif);
+}
+.contact-privacy-note h2 { margin: 0 0 .45rem; color: var(--brass); font: 600 .68rem/1 var(--sans); letter-spacing: .13em; text-transform: uppercase; }
+.contact-privacy-note p { max-width: 68ch; color: var(--muted); font-size: .79rem; line-height: 1.65; }
+.contact-channel-list { border-top: 1px solid var(--line2); }
+.contact-channel-list > a {
+  min-height: 104px;
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.3rem .25rem;
+  border-bottom: 1px solid var(--line);
+  transition: padding .2s ease, background .2s ease;
+}
+.contact-channel-list > a:hover,
+.contact-channel-list > a:focus-visible { padding-inline: 1rem; background: rgba(170, 183, 162, .06); }
+.contact-channel-list > a > span { color: var(--brass); font: 500 1.1rem/1 var(--serif); }
+.contact-channel-list small { display: block; margin-bottom: .35rem; color: var(--faint); font: 600 .6rem/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
+.contact-channel-list strong { font: 500 clamp(1.65rem, 3vw, 2.65rem)/1 var(--serif); }
+.contact-channel-list i { color: var(--sage); font-style: normal; }
+.contact-channel-list em { grid-column: 2; margin-top: -.8rem; color: var(--faint); font: 500 .6rem/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+.contact-practical { display: flex; justify-content: space-between; gap: 2rem; align-items: end; padding-top: 1rem; }
+.contact-price-card { display: grid; gap: .45rem; }
+.contact-price-card span { color: var(--faint); font: 600 .62rem/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; }
+.contact-price-card strong { color: var(--sage); font: 500 clamp(2rem, 4vw, 3.4rem)/1 var(--serif); }
+.contact-practical > p { color: var(--muted); font-size: .75rem; }
+.contact-details-compact { margin-top: 3rem; }
+
+@media (max-width: 1100px) {
+  .procedure-local-nav { grid-template-columns: auto minmax(0, 1fr); }
+  .procedure-local-nav::before { left: 10rem; }
+  .faq-section { grid-template-columns: 1fr; }
+  .faq-filters,
+  .faq-groups { grid-column: 1; grid-row: auto; }
+  .contact-page .contact-copy { position: static; }
+}
+
+@media (max-width: 760px) {
+  .page-hero { min-height: 68svh; }
+  .procedure-local-nav { top: 68px; display: block; min-height: 52px; }
+  .procedure-local-nav-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .procedure-local-nav::before { left: 0; }
+  .procedure-local-nav::before,
+  .procedure-local-nav::after { width: 3rem; }
+  .procedure-local-nav a { min-width: 7.6rem; min-height: 50px; padding: .7rem 1rem; }
+  #ocena,
+  #zakres,
+  #opieka,
+  #cena,
+  #konsultacja { scroll-margin-top: 8.25rem; }
+  .procedure-overview,
+  .procedure-facts,
+  .procedure-safety,
+  .related-procedures { padding-block: 4.75rem; }
+  .procedure-overview .intro-grid { gap: 2rem; }
+  .consultation-focus { margin-top: 3rem; padding: 1.2rem; }
+  .procedure-fact-list article { padding-block: 1.6rem; }
+  .faq-section { padding-block: 4.75rem; }
+  .faq-filters { flex-wrap: nowrap; overflow-x: auto; padding-bottom: .35rem; scrollbar-width: none; }
+  .faq-filters::-webkit-scrollbar { display: none; }
+  .faq-filters button { flex: 0 0 auto; }
+  .faq-group > h3 { font-size: 1.45rem; }
+  .faq-item > button { min-height: 72px; padding-block: 1.2rem; }
+  .contact-page { padding-block: 4.75rem; gap: 3.5rem; }
+  .contact-copy h2 { font-size: clamp(3rem, 14vw, 4.5rem); }
+  .contact-privacy-note { padding: 1rem; }
+  .contact-channel-list > a { min-height: 92px; }
+  .contact-channel-list strong { font-size: clamp(1.55rem, 8vw, 2.2rem); }
+  .contact-practical { align-items: start; flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .procedure-local-nav::before,
+  .procedure-local-nav::after,
+  .contact-channel-list > a { transition: none; }
+}

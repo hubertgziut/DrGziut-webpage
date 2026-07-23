@@ -357,15 +357,9 @@ function SiteHeader() {
         </nav>
 
         <div className="header-actions">
-          <a className="header-phone" href={siteContent.contact.phoneHref} data-menu-inert>
-            {siteContent.contact.phoneDisplay}
-          </a>
           <div data-menu-inert>
             <LanguageSwitch />
           </div>
-          <Link className="header-cta" to={staticPaths.contact} data-menu-inert>
-            {t(siteContent.navigation.book)}
-          </Link>
           <button
             className="menu-trigger"
             type="button"
@@ -468,7 +462,7 @@ function RouteFocusAndScroll() {
   const hasMounted = useRef(false);
 
   useEffect(() => {
-    const shouldMoveFocus = hasMounted.current;
+    const shouldMoveFocus = hasMounted.current || Boolean(location.hash);
     hasMounted.current = true;
     const frame = window.requestAnimationFrame(() => {
       const main = document.getElementById("main-content");
@@ -483,7 +477,7 @@ function RouteFocusAndScroll() {
       else window.scrollTo({ top: 0, left: 0, behavior: "auto" });
       root.style.scrollBehavior = previousScrollBehavior;
 
-      if (shouldMoveFocus) main?.focus({ preventScroll: true });
+      if (shouldMoveFocus) (hashTarget ?? main)?.focus({ preventScroll: true });
     });
 
     return () => window.cancelAnimationFrame(frame);

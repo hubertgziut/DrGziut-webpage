@@ -5,9 +5,12 @@ import Seo from "../components/Seo";
 import { pageContent, siteContent } from "../content/site";
 import { useT } from "../i18n";
 
+type ActiveGroup = "all" | number;
+
 export default function FaqPage() {
   const t = useT();
   const copy = pageContent.faq;
+  const [activeGroup, setActiveGroup] = useState<ActiveGroup>("all");
   const [openItems, setOpenItems] = useState<ReadonlySet<string>>(() => new Set(["0-0"]));
 
   const toggle = (id: string) => {
@@ -18,6 +21,10 @@ export default function FaqPage() {
       return next;
     });
   };
+
+  const visibleGroups = copy.groups
+    .map((group, groupIndex) => ({ group, groupIndex }))
+    .filter(({ groupIndex }) => activeGroup === "all" || activeGroup === groupIndex);
 
   return (
     <>
@@ -39,8 +46,34 @@ export default function FaqPage() {
           <h2 id="faq-groups-title">{t(copy.title)}</h2>
           <p>{t(copy.summary)}</p>
         </div>
-        <div className="faq-groups">
+
+        <div
+          className="faq-filters"
+          role="group"
+          aria-label={t(copy.filterLabel)}
+          data-testid="faq-filters"
+        >
+          <button
+            type="button"
+            aria-pressed={activeGroup === "all"}
+            onClick={() => setActiveGroup("all")}
+          >
+            {t(copy.allFilter)}
+          </button>
           {copy.groups.map((group, groupIndex) => (
+            <button
+              type="button"
+              aria-pressed={activeGroup === groupIndex}
+              key={group.title.pl}
+              onClick={() => setActiveGroup(groupIndex)}
+            >
+              {t(group.title)}
+            </button>
+          ))}
+        </div>
+
+        <div className="faq-groups" aria-live="polite">
+          {visibleGroups.map(({ group, groupIndex }) => (
             <section className="faq-group" key={group.title.pl} aria-labelledby={`faq-group-${groupIndex}`}>
               <h3 id={`faq-group-${groupIndex}`}>{t(group.title)}</h3>
               <div className="faq-list">

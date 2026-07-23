@@ -1,5 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
-import { readdirSync, readFileSync } from "node:fs";
+import AxeBuilder from "@axe-core/playwright";
+import { spawnSync } from "node:child_process";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -7,6 +9,7 @@ import {
   categoryPath,
   procedurePath,
   procedures,
+  siteContent,
   staticPaths,
 } from "../src/content/site";
 
@@ -30,7 +33,7 @@ const routes = [
   { path: "/konsultacja", heading: /Spokojna rozmowa/ },
   { path: "/cennik", heading: /Przejrzystość/ },
   { path: "/faq", heading: /Pytania/ },
-  { path: "/kontakt", heading: /Zacznij od spokojnej rozmowy/ },
+  { path: "/kontakt", heading: /Wybierz prosty sposób kontaktu/ },
 ] as const;
 
 const allowedAssetPaths = [
@@ -45,6 +48,17 @@ const allowedAssetPaths = [
 
 const allowedAssetNames = new Set(allowedAssetPaths.map((path) => basename(path)));
 const assetRoot = fileURLToPath(new URL("../public/assets/", import.meta.url));
+const distRoot = fileURLToPath(new URL("../dist/", import.meta.url));
+const projectRoot = fileURLToPath(new URL("../", import.meta.url));
+const productionBase = "https://hubertgziut.github.io/DrGziut-webpage";
+
+function sitemapPaths() {
+  const sitemap = readFileSync(new URL("../public/sitemap.xml", import.meta.url), "utf8");
+  return Array.from(sitemap.matchAll(/<loc>([^<]+)<\/loc>/g), ([, location]) => {
+    const path = new URL(location).pathname.replace(/^\/DrGziut-webpage(?=\/|$)/, "");
+    return path || "/";
+  });
+}
 
 function listAssetFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -104,19 +118,74 @@ test.describe("route matrix", () => {
 });
 
 test("sitemap exactly matches all published routes", () => {
-  const sitemap = readFileSync(new URL("../public/sitemap.xml", import.meta.url), "utf8");
-  const sitemapPaths = Array.from(sitemap.matchAll(/<loc>([^<]+)<\/loc>/g), ([, location]) => {
-    const path = new URL(location).pathname.replace(/^\/DrGziut-webpage(?=\/|$)/, "");
-    return path || "/";
-  }).sort();
+  const actualSitemapPaths = sitemapPaths().sort();
   const expectedPaths = [
     ...Object.values(staticPaths),
     ...Object.values(categories).map(categoryPath),
     ...procedures.map(procedurePath),
   ].sort();
 
-  expect(sitemapPaths).toEqual(expectedPaths);
-  expect(new Set(sitemapPaths).size).toBe(sitemapPaths.length);
+  expect(actualSitemapPaths).toEqual(expectedPaths);
+  expect(new Set(actualSitemapPaths).size).toBe(actualSitemapPaths.length);
+});
+
+test("Hybrid H1 build emits a route-aware static document for every sitemap URL", () => {
+  for (const path of sitemapPaths()) {
+    const relativePath = path === "/" ? "" : path.replace(/^\//, "");
+    const documentPath = join(distRoot, relativePath, "index.html");
+    expect(existsSync(documentPath), `${path} should have a static document`).toBe(true);
+
+    const html = readFileSync(documentPath, "utf8");
+    const canonical = path === "/" ? `${productionBase}/` : `${productionBase}${path}`;
+    expect(html, `${path} should have route-aware title metadata`).toMatch(/<title>[^<]{8,}<\/title>/i);
+    expect(html, `${path} should have route-aware description metadata`).toMatch(/<meta\s+name="description"\s+content="[^"]{40,}"/i);
+    expect(html, `${path} should expose its exact production canonical`).toContain(
+      `<link rel="canonical" href="${canonical}">`,
+    );
+  }
+});
+
+test("static generator rejects filesystem-normalized duplicate routes", () => {
+  const sitemapPath = join(distRoot, "sitemap.xml");
+  const originalSitemap = readFileSync(sitemapPath, "utf8");
+  const collision = [
+    "  <url><loc>https://hubertgziut.github.io/DrGziut-webpage/foo//bar</loc></url>",
+    "  <url><loc>https://hubertgziut.github.io/DrGziut-webpage/foo/bar</loc></url>",
+  ].join("\n");
+  writeFileSync(sitemapPath, originalSitemap.replace("</urlset>", `${collision}\n</urlset>`));
+  let result: ReturnType<typeof spawnSync> | undefined;
+  try {
+    result = spawnSync(process.execPath, [join(projectRoot, "scripts/generate-static-routes.mjs")], {
+      cwd: projectRoot,
+      encoding: "utf8",
+      timeout: 30_000,
+    });
+  } finally {
+    writeFileSync(sitemapPath, originalSitemap);
+  }
+  expect(result).toBeDefined();
+  expect(result?.status).not.toBe(0);
+  expect(`${result?.stdout ?? ""}${result?.stderr ?? ""}`).toContain("Non-canonical sitemap route");
+});
+
+test("static generator rejects a single percent-encoded noncanonical route", () => {
+  const sitemapPath = join(distRoot, "sitemap.xml");
+  const originalSitemap = readFileSync(sitemapPath, "utf8");
+  const encodedRoute = "  <url><loc>https://hubertgziut.github.io/DrGziut-webpage/f%61q</loc></url>";
+  writeFileSync(sitemapPath, originalSitemap.replace("</urlset>", `${encodedRoute}\n</urlset>`));
+  let result: ReturnType<typeof spawnSync> | undefined;
+  try {
+    result = spawnSync(process.execPath, [join(projectRoot, "scripts/generate-static-routes.mjs")], {
+      cwd: projectRoot,
+      encoding: "utf8",
+      timeout: 30_000,
+    });
+  } finally {
+    writeFileSync(sitemapPath, originalSitemap);
+  }
+  expect(result).toBeDefined();
+  expect(result?.status).not.toBe(0);
+  expect(`${result?.stdout ?? ""}${result?.stderr ?? ""}`).toContain("Non-canonical sitemap route");
 });
 
 test("public assets exactly match the reviewed allowlist", () => {
@@ -176,10 +245,52 @@ test("mobile menu traps focus, closes with Escape, and restores trigger focus", 
   await expect(trigger).toBeFocused();
 });
 
-test("FAQ answers visually follow their expanded state", async ({ page }) => {
+test("Hybrid H1 procedure guide exposes five safe anchors and mobile edge fades", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("chirurgia-plastyczna/plastyka-powiek");
+
+  const guide = page.getByTestId("procedure-local-nav");
+  await expect(page.getByTestId("procedure-hero-guide")).toContainText("Konsultacja lekarska");
+  await expect(guide.getByRole("link")).toHaveCount(5);
+  await expect(guide).toHaveAttribute("data-at-start", "true");
+
+  for (const anchor of ["ocena", "zakres", "opieka", "cena", "konsultacja"]) {
+    await expect(guide.locator(`a[href="#${anchor}"]`)).toHaveCount(1);
+    await expect(page.locator(`#${anchor}`)).toHaveCount(1);
+  }
+
+  const track = page.getByTestId("procedure-local-nav-track");
+  await track.evaluate((element) => {
+    element.scrollLeft = element.scrollWidth;
+  });
+  await expect(guide).toHaveAttribute("data-at-end", "true");
+  const priceLink = guide.locator('a[href="#cena"]');
+  await priceLink.focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/#cena$/);
+  await expect(page.locator("#cena")).toBeFocused();
+  await expect
+    .poll(async () => (await page.locator("#cena").boundingBox())?.y ?? 999)
+    .toBeLessThan(260);
+  const priceBox = await page.locator("#cena").boundingBox();
+  expect(priceBox?.y ?? 0).toBeGreaterThanOrEqual(64);
+
+  await page.getByTestId("language-en").click();
+  await expect(page.getByTestId("procedure-hero-guide")).toContainText("Medical consultation");
+
+  await page.goto("chirurgia-plastyczna/plastyka-powiek#cena");
+  await expect(page.locator("#cena")).toBeFocused();
+  await expect
+    .poll(async () => (await page.locator("#cena").boundingBox())?.y ?? 999)
+    .toBeLessThan(260);
+});
+
+test("Hybrid H1 FAQ has six questions, category filters and accessible accordion state", async ({ page }) => {
   await page.goto("faq");
+  const filters = page.getByTestId("faq-filters");
   const items = page.locator(".faq-item");
-  expect(await items.count()).toBeGreaterThan(1);
+  await expect(filters.getByRole("button")).toHaveCount(5);
+  await expect(items).toHaveCount(6);
 
   const firstAnswer = items.nth(0).locator(".faq-answer");
   const secondItem = items.nth(1);
@@ -194,34 +305,89 @@ test("FAQ answers visually follow their expanded state", async ({ page }) => {
   await expect(secondAnswer).toBeVisible();
   await secondButton.click();
   await expect(secondAnswer).toBeHidden();
+
+  const procedureFilter = filters.getByRole("button", { name: "Procedury", exact: true });
+  await procedureFilter.click();
+  await expect(procedureFilter).toHaveAttribute("aria-pressed", "true");
+  await expect(items).toHaveCount(1);
+  await filters.getByRole("button", { name: "Wszystkie", exact: true }).click();
+  await expect(items).toHaveCount(6);
 });
 
 test("header and footer use text-only wordmarks", async ({ page }) => {
   await page.goto("./");
   await expect(page.locator(".brand-wordmark")).toBeVisible();
   await expect(page.locator(".brand img")).toHaveCount(0);
+  await expect(page.locator(".site-header .header-cta, .site-header .header-phone")).toHaveCount(0);
   await page.locator(".site-footer").scrollIntoViewIfNeeded();
   await expect(page.locator(".footer-wordmark")).toBeVisible();
   await expect(page.locator(".footer-brand img")).toHaveCount(0);
 });
 
-test("demonstration form sends no request and exposes privacy warning", async ({ page }) => {
+test("Hybrid H1 contact is privacy-first and offers direct phone, WhatsApp and SMS channels", async ({ page }) => {
   await page.goto("kontakt");
-  await expect(page.locator('a[href="tel:+48533210115"]').first()).toBeVisible();
-  let dataRequests = 0;
-  page.on("request", (request) => {
-    if (["xhr", "fetch"].includes(request.resourceType())) dataRequests += 1;
-  });
-  const form = page.getByTestId("demo-form");
-  await form.getByLabel("Imię i nazwisko").fill("Jan Testowy");
-  await form.getByLabel("Telefon lub e-mail").fill("test@example.test");
-  await form.getByLabel("Zakres konsultacji").selectOption("surgery");
-  await form.getByLabel(/Rozumiem, że formularz/).check();
-  await form.getByRole("button", { name: /Pokaż potwierdzenie/ }).click();
-  const successHeading = page.getByTestId("form-success").getByRole("heading");
-  await expect(successHeading).toBeFocused();
-  await expect(successHeading).toHaveCSS("outline-style", "solid");
-  expect(dataRequests).toBe(0);
+  await expect(page.getByTestId("demo-form")).toHaveCount(0);
+
+  const privacyNote = page.getByTestId("contact-privacy-note");
+  const channels = page.getByTestId("contact-channel-list");
+  await expect(privacyNote).toContainText("Nie przesyłaj danych o zdrowiu");
+  await expect(page.getByText("od 300 zł", { exact: true })).toBeVisible();
+  expect(
+    await page.evaluate(() => {
+      const note = document.querySelector('[data-testid="contact-privacy-note"]');
+      const channelList = document.querySelector('[data-testid="contact-channel-list"]');
+      return Boolean(
+        note &&
+          channelList &&
+          note.compareDocumentPosition(channelList) & Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+    }),
+  ).toBe(true);
+
+  await expect(channels.getByRole("link")).toHaveCount(3);
+  await expect(page.locator('.contact-page a[href^="mailto:"]')).toHaveCount(0);
+  await expect(page.locator(".contact-page")).toContainText(siteContent.contact.email);
+  const expectedPhoneHref = siteContent.contact.phoneHref;
+  const expectedSmsHref = expectedPhoneHref.replace(/^tel:/, "sms:");
+  const expectedWhatsAppHref = `https://wa.me/${expectedPhoneHref.replace(/\D/g, "")}`;
+  const displayDigits = siteContent.contact.phoneDisplay.replace(/\D/g, "");
+  expect(expectedPhoneHref).toMatch(/^tel:\+48\d{9}$/);
+  expect(expectedSmsHref).toMatch(/^sms:\+48\d{9}$/);
+  expect(expectedWhatsAppHref).toMatch(/^https:\/\/wa\.me\/48\d{9}$/);
+  expect(expectedPhoneHref.replace(/\D/g, "")).toBe(displayDigits);
+  await expect(channels.locator('a[href^="tel:"]')).toHaveAttribute("href", expectedPhoneHref);
+  await expect(channels.locator('a[href^="https://wa.me/"]')).toHaveAttribute("href", expectedWhatsAppHref);
+  await expect(channels.locator('a[href^="sms:"]')).toHaveAttribute("href", expectedSmsHref);
+
+  await page.getByTestId("language-en").click();
+  await expect(privacyNote).toContainText("Do not send health information");
+});
+
+test("Hybrid H1 representative routes have no serious or critical Axe WCAG violations", async ({ page }) => {
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 1440, height: 1000 },
+  ]) {
+    await page.setViewportSize(viewport);
+    for (const path of ["chirurgia-plastyczna/plastyka-powiek", "kontakt", "faq"]) {
+      await page.goto(path);
+      await page.locator("#page-title").waitFor({ state: "visible" });
+      const results = await new AxeBuilder({ page })
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+        .analyze();
+      const blocking = results.violations
+        .filter((violation) => violation.impact === "serious" || violation.impact === "critical")
+        .map((violation) => ({
+          id: violation.id,
+          impact: violation.impact,
+          nodes: violation.nodes.map((node) => ({ target: node.target, summary: node.failureSummary })),
+        }));
+      expect(
+        blocking,
+        `${path} @ ${viewport.width}px should pass Axe serious/critical checks`,
+      ).toEqual([]);
+    }
+  }
 });
 
 test("unknown route renders an in-app noindex 404", async ({ page }) => {

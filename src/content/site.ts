@@ -738,6 +738,16 @@ export const pageContent = {
     factsTitle: { pl: "Najważniejsze zagadnienia do omówienia.", en: "Key points to discuss." },
     safetyTitle: { pl: "Bez obietnic i bez decyzji przed badaniem.", en: "No promises and no decision before examination." },
     relatedTitle: { pl: "Pozostań w tym samym obszarze konsultacji.", en: "Explore the same consultation area." },
+    guideLabel: { pl: "Na tej stronie", en: "On this page" },
+    guideAsideTitle: { pl: "Konsultacja lekarska", en: "Medical consultation" },
+    guideAsideText: { pl: "Kwalifikacja przed planem.", en: "Assessment before planning." },
+    guideItems: [
+      { id: "ocena", label: { pl: "Ocena", en: "Assessment" } },
+      { id: "zakres", label: { pl: "Zakres", en: "Scope" } },
+      { id: "opieka", label: { pl: "Opieka", en: "Aftercare" } },
+      { id: "cena", label: { pl: "Cena", en: "Price" } },
+      { id: "konsultacja", label: { pl: "Konsultacja", en: "Consultation" } },
+    ],
   },
   home: {
     seo: {
@@ -848,6 +858,8 @@ export const pageContent = {
     eyebrow: { pl: "FAQ", en: "FAQ" },
     title: { pl: "Pytania, które warto zadać.", en: "Questions worth asking." },
     summary: { pl: "Odpowiedzi mają charakter edukacyjny. Indywidualne zalecenia i kwalifikacja wymagają konsultacji oraz badania.", en: "Answers are educational. Individual recommendations and assessment require consultation and examination." },
+    filterLabel: { pl: "Kategorie pytań", en: "Question categories" },
+    allFilter: { pl: "Wszystkie", en: "All" },
     groups: [
       {
         title: { pl: "Konsultacja", en: "Consultation" },
@@ -859,14 +871,12 @@ export const pageContent = {
       {
         title: { pl: "Procedury", en: "Procedures" },
         items: [
-          { question: { pl: "Czy jedna konsultacja wystarczy do ustalenia planu?", en: "Is one consultation enough to establish a plan?" }, answer: { pl: "Zależy to od problemu, potrzebnych badań i zakresu rozważanego postępowania. Lekarz informuje, jeśli potrzebna jest dodatkowa ocena lub czas na decyzję.", en: "This depends on the concern, required investigations and contemplated scope. The physician will explain if further assessment or decision time is needed." } },
           { question: { pl: "Czy można łączyć różne metody?", en: "Can different methods be combined?" }, answer: { pl: "Czasem plan etapowy lub łączony może być rozważany, ale tylko wtedy, gdy wynika ze wskazań i oceny bezpieczeństwa. Większa liczba procedur nie oznacza lepszego planu.", en: "A staged or combined plan may sometimes be considered when supported by indications and safety assessment. More procedures do not necessarily make a better plan." } },
         ],
       },
       {
         title: { pl: "Rekonwalescencja", en: "Recovery" },
         items: [
-          { question: { pl: "Ile trwa rekonwalescencja?", en: "How long does recovery take?" }, answer: { pl: "Zależy od rodzaju i zakresu procedury oraz indywidualnego gojenia. Orientacyjny przebieg i terminy kontroli są omawiane po kwalifikacji.", en: "It depends on procedure type and scope and individual healing. The expected course and follow-up schedule are discussed after assessment." } },
           { question: { pl: "Kiedy można wrócić do codziennej aktywności?", en: "When can normal activities resume?" }, answer: { pl: "Nie ma jednego terminu dla wszystkich procedur. Lekarz omawia spodziewane ograniczenia i przekazuje indywidualne zalecenia po ustaleniu zakresu.", en: "There is no single timeframe for every procedure. The physician discusses expected restrictions and provides individual instructions after scope is agreed." } },
         ],
       },
@@ -882,17 +892,26 @@ export const pageContent = {
   contact: {
     seo: {
       title: { pl: "Kontakt i konsultacja — DrGziut Szczecin", en: "Contact and consultation — DrGziut Szczecin" },
-      description: { pl: "Telefon, e-mail i adres gabinetu DrGziut w Szczecinie oraz demonstracyjny formularz kontaktowy bez wysyłania danych.", en: "Phone, email and practice address for DrGziut in Szczecin and a demonstration contact form that sends no data." },
+      description: { pl: "Telefon, WhatsApp, SMS, e-mail i adres gabinetu DrGziut w Szczecinie. Kontakt służy organizacji konsultacji lekarskiej.", en: "Phone, WhatsApp, SMS, email and practice address for DrGziut in Szczecin. Contact is for arranging a medical consultation." },
     },
     eyebrow: { pl: "Kontakt", en: "Contact" },
-    title: { pl: "Zacznij od spokojnej rozmowy.", en: "Start with a considered conversation." },
-    summary: { pl: "Jeśli nie wiesz, która metoda może być właściwa, umów konsultację z lekarzem. Nie przesyłaj dokumentacji medycznej przez formularz demonstracyjny.", en: "If you are unsure which method may be appropriate, arrange a physician consultation. Do not send medical records through the demonstration form." },
+    title: { pl: "Wybierz prosty sposób kontaktu.", en: "Choose a simple way to get in touch." },
+    summary: { pl: "Kontakt służy organizacji konsultacji z lekarzem. Wybierz telefon, WhatsApp albo SMS — bez formularza i bez podawania danych medycznych.", en: "Contact is for arranging a consultation with the physician. Choose phone, WhatsApp or SMS — without a form or sharing medical information." },
     directTitle: { pl: "Skontaktuj się bezpośrednio", en: "Contact the practice directly" },
     phoneLabel: { pl: "Telefon", en: "Phone" },
     emailLabel: { pl: "E-mail", en: "Email" },
     addressLabel: { pl: "Gabinet", en: "Practice" },
-    formTitle: { pl: "Formularz demonstracyjny", en: "Demonstration form" },
-    formIntro: { pl: "Formularz działa wyłącznie w tej przeglądarce. Po zatwierdzeniu nic nie jest wysyłane ani zapisywane.", en: "This form operates only in this browser. On submission, nothing is sent or stored." },
+    whatsappLabel: { pl: "WhatsApp", en: "WhatsApp" },
+    smsLabel: { pl: "SMS", en: "SMS" },
+    channelHint: { pl: "Przejdź do kontaktu", en: "Open contact channel" },
+    privacyTitle: { pl: "Zanim napiszesz", en: "Before you message" },
+    privacyText: {
+      pl: "Nie przesyłaj danych o zdrowiu, zdjęć, numeru PESEL ani dokumentacji medycznej przez WhatsApp lub SMS. W pierwszej wiadomości wystarczy imię i prośba o termin konsultacji.",
+      en: "Do not send health information, photographs, a national ID number or medical records through WhatsApp or SMS. Your name and a request for a consultation appointment are enough in the first message.",
+    },
+    consultationPriceLabel: { pl: "Konsultacja lekarska", en: "Medical consultation" },
+    consultationPrice: { pl: "od 300 zł", en: "from PLN 300" },
+    availabilityNote: { pl: "Termin ustalany indywidualnie", en: "Appointment arranged individually" },
   },
   notFound: {
     seo: {
@@ -908,20 +927,6 @@ export const pageContent = {
     eyebrow: { pl: "Konsultacja lekarska", en: "Medical consultation" },
     title: { pl: "Zacznij od rozmowy i badania.", en: "Begin with discussion and examination." },
     text: { pl: "Jeśli nie wiesz, która metoda może być właściwa, nie musisz wybierać jej przed wizytą. Kwalifikacja i plan powstają podczas konsultacji.", en: "If you are unsure which method may be appropriate, you do not need to choose it before the visit. Assessment and planning take place during consultation." },
-  },
-  contactForm: {
-    name: { pl: "Imię i nazwisko", en: "Full name" },
-    contact: { pl: "Telefon lub e-mail", en: "Phone or email" },
-    area: { pl: "Zakres konsultacji", en: "Consultation area" },
-    select: { pl: "Wybierz", en: "Select" },
-    unsure: { pl: "Nie wiem — potrzebuję konsultacji", en: "I am unsure — I need a consultation" },
-    message: { pl: "Krótka wiadomość (opcjonalnie)", en: "Short message (optional)" },
-    warning: { pl: "Nie wpisuj numeru PESEL, danych o zdrowiu, innych danych wrażliwych ani nie przesyłaj dokumentacji medycznej przez ten formularz.", en: "Do not enter a national ID number, health information, other sensitive data or medical records in this form." },
-    consent: { pl: "Rozumiem, że formularz ma charakter demonstracyjny i nie wysyła ani nie zapisuje danych.", en: "I understand that this form is demonstrational and does not send or store data." },
-    submit: { pl: "Pokaż potwierdzenie demonstracyjne", en: "Show demonstration confirmation" },
-    successTitle: { pl: "Formularz demonstracyjny", en: "Demonstration form" },
-    success: { pl: "Żadne dane nie zostały wysłane ani zapisane. Aby umówić konsultację, zadzwoń lub napisz bezpośrednio do gabinetu.", en: "No data was sent or stored. To book a consultation, please call or email the practice directly." },
-    reset: { pl: "Wróć do formularza", en: "Return to form" },
   },
 } as const;
 

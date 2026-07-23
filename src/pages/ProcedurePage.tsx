@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import ContactBand from "../components/ContactBand";
 import PageHero from "../components/PageHero";
 import ProcedureCard from "../components/ProcedureCard";
+import ProcedureLocalNav from "../components/ProcedureLocalNav";
 import Seo from "../components/Seo";
 import {
   categories,
@@ -31,9 +32,16 @@ export default function ProcedurePage({ procedureId }: { procedureId: ProcedureI
           { label: category.label, to: categoryPath(category) },
           { label: procedure.shortTitle },
         ]}
+        aside={
+          <div className="procedure-hero-guide" data-testid="procedure-hero-guide">
+            <span>{t(copy.guideAsideTitle)}</span>
+            <strong>{t(copy.guideAsideText)}</strong>
+          </div>
+        }
       />
+      <ProcedureLocalNav />
 
-      <section className="procedure-overview editorial-section" aria-labelledby="procedure-overview-title">
+      <section id="ocena" className="procedure-overview editorial-section" aria-labelledby="procedure-overview-title" tabIndex={-1}>
         <div className="chapter-label">
           <span>02</span>
           <span className="chapter-line" aria-hidden="true" />
@@ -53,7 +61,7 @@ export default function ProcedurePage({ procedureId }: { procedureId: ProcedureI
         </div>
       </section>
 
-      <section className="procedure-facts editorial-section" aria-labelledby="procedure-facts-title">
+      <section id="zakres" className="procedure-facts editorial-section" aria-labelledby="procedure-facts-title" tabIndex={-1}>
         <div className="chapter-label">
           <span>03</span>
           <span className="chapter-line" aria-hidden="true" />
@@ -71,7 +79,7 @@ export default function ProcedurePage({ procedureId }: { procedureId: ProcedureI
         </div>
       </section>
 
-      <section className="procedure-safety editorial-section" aria-labelledby="safety-title">
+      <section id="opieka" className="procedure-safety editorial-section" aria-labelledby="safety-title" tabIndex={-1}>
         <div>
           <div className="chapter-label">
             <span>04</span>
@@ -81,7 +89,7 @@ export default function ProcedurePage({ procedureId }: { procedureId: ProcedureI
           <h2 id="safety-title">{t(copy.safetyTitle)}</h2>
           <p>{t(siteContent.common.safetyNote)}</p>
         </div>
-        <aside className="procedure-price" aria-labelledby="procedure-price-title">
+        <aside id="cena" className="procedure-price" aria-labelledby="procedure-price-title" tabIndex={-1}>
           <h3 id="procedure-price-title">{t(siteContent.common.indicativePrice)}</h3>
           {procedure.price ? (
             <p>{t(procedure.price)}</p>
@@ -109,7 +117,7 @@ export default function ProcedurePage({ procedureId }: { procedureId: ProcedureI
         </div>
       </section>
 
-      <ContactBand cta={procedure.consultationCta} />
+      <ContactBand id="konsultacja" cta={procedure.consultationCta} />
     </>
   );
 }
