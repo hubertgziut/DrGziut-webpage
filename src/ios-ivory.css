@@ -1,0 +1,329 @@
+/* Airy iOS visual system — approved cycle 002.
+   Loaded after legacy editorial styles to migrate every route without changing content or behavior. */
+:root {
+  --ink: #f4f0e7;
+  --ink2: #ebe5da;
+  --ivory: #1d211d;
+  --muted: #61665f;
+  --faint: #626860;
+  --sage: #6f7e69;
+  --brass: #927245;
+  --line: rgba(35, 40, 35, .11);
+  --line2: rgba(35, 40, 35, .18);
+  --surface: rgba(255, 253, 248, .96);
+  --surface-soft: rgba(249, 246, 239, .96);
+  --canvas: #eee9df;
+  --paper: #fffdf8;
+  --paper-strong: #ffffff;
+  --radius-shell: 34px;
+  --radius-card: 24px;
+  --radius-control: 16px;
+  --island-gap: 16px;
+  color-scheme: light;
+}
+html { background: var(--canvas); }
+body { background: var(--canvas); color: var(--ivory); }
+.site-shell { padding: var(--island-gap); background: var(--canvas); }
+.scene-stack {
+  inset: var(--island-gap);
+  border-radius: var(--radius-shell);
+  background: #ddd7cc;
+  box-shadow: 0 12px 46px rgba(64, 55, 42, .10);
+}
+.scene-layer img { filter: saturate(.48) contrast(.82) brightness(1.32); }
+.scene-shade {
+  background:
+    linear-gradient(90deg, rgba(255,253,248,.95), rgba(255,253,248,.80) 46%, rgba(255,253,248,.48)),
+    radial-gradient(circle at 76% 35%, rgba(255,255,255,.06), rgba(238,233,223,.30) 50%, rgba(238,233,223,.72)),
+    linear-gradient(0deg, rgba(244,240,231,.86), rgba(255,253,248,.08) 42%);
+}
+.site-header {
+  inset: 14px 22px auto;
+  height: 72px;
+  padding-inline: clamp(20px, 3.5vw, 52px);
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 23px;
+  background: rgba(255, 253, 248, .82);
+  box-shadow: 0 10px 34px rgba(61, 53, 42, .10);
+  backdrop-filter: blur(24px) saturate(1.12);
+}
+.brand-wordmark,
+.footer-wordmark,
+.desktop-nav a,
+.desktop-offer-trigger,
+.language-switch button,
+.menu-trigger,
+.hero,
+.hero h1,
+.hero-copy > p { color: var(--ivory); }
+.desktop-nav a,
+.desktop-offer-trigger { color: #555b53; }
+.desktop-nav a:hover,
+.desktop-offer-menu a:hover,
+.desktop-offer-menu a:focus-visible { color: #20251f; }
+.desktop-offer-menu,
+.mobile-menu {
+  color: var(--ivory);
+  background: rgba(255,253,248,.97);
+  border-color: var(--line2);
+  border-radius: var(--radius-card);
+  box-shadow: 0 24px 80px rgba(61, 53, 42, .16);
+}
+.mobile-menu { inset: 8px; }
+.menu-trigger span { background: var(--ivory); }
+main > section,
+.site-footer,
+.trust-strip {
+  position: relative;
+  z-index: 2;
+  margin: 0 0 var(--island-gap);
+  border: 1px solid rgba(255,255,255,.78);
+  border-radius: var(--radius-shell);
+  overflow: clip;
+  box-shadow: 0 12px 42px rgba(64, 55, 42, .075);
+}
+main > section:not(.hero) { background: var(--surface) !important; }
+.category-gateways {
+  border: 0 !important;
+  overflow: visible;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.category-gateways .discipline,
+.discipline-intro,
+.doctor,
+.philosophy,
+.process,
+.pricing,
+.faq-section,
+.contact {
+  color: var(--ivory);
+  background: var(--surface) !important;
+}
+.category-gateways .discipline {
+  margin-bottom: var(--island-gap);
+  border: 1px solid rgba(255,255,255,.78);
+  border-radius: var(--radius-shell);
+  overflow: clip;
+  box-shadow: 0 12px 42px rgba(64,55,42,.075);
+}
+.hero {
+  min-height: calc(100svh - (var(--island-gap) * 2));
+  border-radius: var(--radius-shell);
+  background: transparent;
+}
+.hero-copy > p,
+.discipline-copy > p,
+.intro-grid p,
+.trust-strip div,
+.doctor-copy > p:not(.doctor-title),
+.process-list p,
+.pricing-heading > p,
+.contact-copy > p,
+.contact-band p { color: var(--muted); }
+.hero h1 em,
+.doctor-copy h2 em,
+.chapter-label,
+.brand-wordmark strong,
+.procedure-card-index,
+.procedure-card-arrow,
+.price-list b,
+.faq-item > button i { color: var(--sage); }
+.primary-button,
+.secondary-button,
+.text-link {
+  border-radius: 999px;
+}
+.primary-button {
+  color: #fff;
+  background: #66745f;
+  box-shadow: 0 8px 22px rgba(79, 91, 73, .16);
+}
+.primary-button:hover { color: #fff; background: #53624e; }
+.secondary-button {
+  color: var(--ivory);
+  border-color: var(--line2);
+  background: rgba(255,255,255,.66);
+}
+.secondary-button:hover { color: var(--ivory); border-color: #a9895b; background: #fff; }
+.trust-strip {
+  grid-template-columns: repeat(4, 1fr);
+  background: rgba(255,253,248,.90);
+  backdrop-filter: blur(18px);
+}
+.trust-strip div { border-color: var(--line); }
+.procedure-card-grid {
+  gap: 12px;
+  border: 0;
+}
+.procedure-card,
+.consultation-details article,
+.timeline-list li,
+.related-page-links a,
+.consultation-focus,
+.procedure-price,
+.pricing-note {
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius-card);
+  color: var(--ivory);
+  background: var(--paper-strong) !important;
+  box-shadow: 0 8px 24px rgba(64,55,42,.055);
+}
+.procedure-card:hover,
+.procedure-card:focus-within,
+.related-page-links a:hover {
+  background: #fff !important;
+  box-shadow: 0 14px 34px rgba(64,55,42,.09);
+}
+.procedure-list,
+.process-list,
+.price-list,
+.contact-details,
+.procedure-fact-list,
+.faq-list {
+  padding-inline: clamp(16px, 2.2vw, 28px);
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: rgba(255,255,255,.62);
+}
+.faq-list {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  border: 0;
+  background: transparent;
+}
+.faq-item {
+  padding-inline: clamp(16px, 2.2vw, 26px);
+  border: 1px solid var(--line) !important;
+  border-radius: calc(var(--radius-card) - 5px);
+  background: var(--paper-strong);
+}
+.faq-item > button { color: var(--ivory); }
+.faq-answer p { color: var(--muted); }
+.related-page-links,
+.timeline-list,
+.principles { gap: 12px; border: 0; }
+.doctor-portrait,
+.doctor-portrait img,
+.doctor-portrait::before { border-radius: var(--radius-shell); }
+.doctor-portrait img { filter: saturate(.58) contrast(.96) brightness(1.06); }
+.doctor-portrait::before { border-color: rgba(146,114,69,.28); }
+.contact-band,
+.procedure-safety,
+.category-index,
+.related-pages,
+.timeline-section,
+.pricing-page,
+.faq-section,
+.contact-page,
+.doctor-page,
+.not-found { background: var(--surface) !important; }
+.site-footer {
+  color: var(--ivory);
+  background: var(--paper) !important;
+}
+.footer-contact,
+.footer-disclaimer,
+.footer-bottom { color: var(--muted); }
+input,
+select,
+textarea { border-radius: var(--radius-control) !important; }
+:focus-visible { outline-color: #8f7044; }
+@media (max-width: 900px) {
+  :root { --island-gap: 10px; --radius-shell: 28px; --radius-card: 21px; }
+  .site-shell { padding: var(--island-gap); }
+  .site-header { inset: 10px 12px auto; height: 64px; border-radius: 20px; }
+  .hero { min-height: calc(100svh - 20px); padding-inline: 24px; }
+  .trust-strip { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 620px) {
+  main > section,
+  .site-footer,
+  .trust-strip { margin-bottom: var(--island-gap); }
+  .hero { padding-inline: 20px; }
+  .trust-strip { grid-template-columns: 1fr; }
+  .trust-strip div { border-right: 0; }
+  .procedure-card-grid { gap: 10px; }
+}
+
+/* Selected B — Airy iOS */
+:root {
+  --canvas: #f4f0e7;
+  --paper: #fffdf8;
+  --paper-strong: #ffffff;
+  --surface: rgba(255, 253, 248, .975);
+  --surface-soft: rgba(251, 248, 241, .97);
+  --radius-shell: 42px;
+  --radius-card: 29px;
+  --radius-control: 18px;
+  --island-gap: 20px;
+  --sage: #596a55;
+  --brass: #7c5d32;
+}
+.site-header {
+  inset: 18px 28px auto;
+  height: 70px;
+  border-radius: 25px;
+  background: rgba(255,255,255,.78);
+  box-shadow: 0 14px 42px rgba(61,53,42,.11);
+}
+main > section,
+.site-footer,
+.trust-strip { box-shadow: 0 16px 50px rgba(67,57,43,.08); }
+.procedure-card,
+.consultation-details article,
+.timeline-list li,
+.related-page-links a { box-shadow: 0 10px 30px rgba(64,55,42,.07); }
+.hero { padding-inline: clamp(34px, 9vw, 156px); }
+@media (max-width: 900px) {
+  :root { --radius-shell: 32px; --radius-card: 24px; --island-gap: 12px; }
+  .site-header { inset: 12px 14px auto; border-radius: 22px; }
+}
+
+/* Keep the procedure anchor bar within the light Airy iOS surface system. */
+.procedure-local-nav {
+  top: 100px;
+  margin-bottom: var(--island-gap);
+  border: 1px solid rgba(255,255,255,.78);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: rgba(255,253,248,.94);
+  box-shadow: 0 12px 36px rgba(64,55,42,.08);
+  backdrop-filter: blur(24px) saturate(1.08);
+}
+.procedure-local-nav::before {
+  background: linear-gradient(90deg, rgba(255,253,248,1), rgba(255,253,248,0));
+}
+.procedure-local-nav::after {
+  background: linear-gradient(270deg, rgba(255,253,248,1), rgba(255,253,248,0));
+}
+.procedure-local-nav a:hover,
+.procedure-local-nav a:focus-visible {
+  color: var(--ivory);
+  background: rgba(89,106,85,.08);
+}
+
+/* Keep every desktop navigation label, including the offer trigger, on one optical baseline. */
+.desktop-nav { align-items: center; }
+.desktop-nav > a,
+.desktop-offer,
+.desktop-offer-trigger {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.desktop-nav > a,
+.desktop-offer-trigger {
+  padding-block: 0;
+  font-family: var(--sans);
+  font-size: .7rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+@media (max-width: 760px) {
+  .procedure-local-nav { top: 88px; }
+}

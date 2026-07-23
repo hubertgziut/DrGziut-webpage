@@ -29,11 +29,11 @@
 ## Visual language
 
 - Brand attributes: premium, spokojny, precyzyjny, medyczny, editorial, bez ostentacji.
-- Color system: niemal czarne tło, ciepłe jasne teksty i oszczędny akcent brass/gold; kontrast musi pozostać dostępny.
+- Color system: niemal białe tło w odcieniach kremu i kości słoniowej, ciemne teksty oraz oszczędne akcenty sage i brass/gold; kontrast musi pozostać dostępny.
 - Typography: Cormorant Garamond dla nagłówków, Inter dla tekstów użytkowych; czytelność ma pierwszeństwo przed ekspresją.
 - Spacing: duży oddech w hero i sekcjach editorial, mniejszy w formularzach, FAQ i elementach operacyjnych; zachować spójny rytm.
-- Radius: powściągliwy; nie zmieniać strony w jednolitą siatkę zaokrąglonych kart.
-- Surfaces: pełnoekranowe lub szerokie sceny, cienkie linie i subtelne warstwy; karty tylko tam, gdzie wspierają skanowanie informacji.
+- Radius: język Airy iOS — wyraźnie zaokrąglone zewnętrzne rogi głównych sekcji, kart, paneli, zdjęć i kontrolek; zachować hierarchię promieni zamiast jednego radiusu wszędzie.
+- Surfaces: jasne kremowe wyspy oddzielone od tła oddechem i subtelnym cieniem; karty tylko tam, gdzie wspierają skanowanie informacji, bez monotonnej siatki identycznych kafli.
 - Iconography: prosta i neutralna; bez twarzy, profili, sylwetek lub znaków mogących sugerować konkretną osobę.
 - Motion: spokojny i funkcjonalny; wymagane pełne wsparcie `prefers-reduced-motion`.
 - Density: editorial na stronach wizerunkowych, kompaktowa i zadaniowa w FAQ, cenniku, konsultacji i kontakcie.

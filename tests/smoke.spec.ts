@@ -281,6 +281,38 @@ test("desktop offer menu links to both disciplines", async ({ page }) => {
   await expect(page.locator("#main-content")).toHaveCSS("outline-style", "solid");
 });
 
+test("desktop header labels share one visual baseline", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("./");
+  const labels = page.locator(".desktop-nav > a, .desktop-offer-trigger");
+  await expect(labels).toHaveCount(6);
+  const textCenters = await labels.evaluateAll((elements) =>
+    elements.map((element) => {
+      const textNode = Array.from(element.childNodes).find(
+        (node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim(),
+      );
+      if (!textNode) throw new Error(`Missing direct text node in ${element.className}`);
+      const range = document.createRange();
+      range.selectNode(textNode);
+      const box = range.getBoundingClientRect();
+      return box.top + box.height / 2;
+    }),
+  );
+  expect(Math.max(...textCenters) - Math.min(...textCenters)).toBeLessThanOrEqual(1);
+});
+
+test("Airy iOS uses an ivory canvas and rounded surface hierarchy", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("./");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(244, 240, 231)");
+  await expect(page.locator("main > section").first()).toHaveCSS("border-radius", "42px");
+  await page.goto("chirurgia-plastyczna");
+  await expect(page.locator(".procedure-card").first()).toHaveCSS("border-radius", "29px");
+  await page.goto("chirurgia-plastyczna/plastyka-powiek");
+  await expect(page.locator(".procedure-local-nav")).toHaveCSS("background-color", "rgba(255, 253, 248, 0.94)");
+  await expect(page.locator(".procedure-local-nav")).toHaveCSS("border-radius", "29px");
+});
+
 test("skip link is keyboard-only and moves focus to main content", async ({ page }) => {
   await page.goto("./");
   const skipLink = page.getByRole("link", { name: "Przejdź do treści" });
