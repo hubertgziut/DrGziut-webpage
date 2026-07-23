@@ -51,6 +51,8 @@ const assetRoot = fileURLToPath(new URL("../public/assets/", import.meta.url));
 const distRoot = fileURLToPath(new URL("../dist/", import.meta.url));
 const projectRoot = fileURLToPath(new URL("../", import.meta.url));
 const productionBase = "https://hubertgziut.github.io/DrGziut-webpage";
+const productionCanonical = (routePath: string) =>
+  routePath === "/" ? `${productionBase}/` : `${productionBase}${routePath.replace(/\/$/, "")}/`;
 
 function sitemapPaths() {
   const sitemap = readFileSync(new URL("../public/sitemap.xml", import.meta.url), "utf8");
@@ -123,7 +125,9 @@ test("sitemap exactly matches all published routes", () => {
     ...Object.values(staticPaths),
     ...Object.values(categories).map(categoryPath),
     ...procedures.map(procedurePath),
-  ].sort();
+  ]
+    .map((path) => (path === "/" ? "/" : `${path}/`))
+    .sort();
 
   expect(actualSitemapPaths).toEqual(expectedPaths);
   expect(new Set(actualSitemapPaths).size).toBe(actualSitemapPaths.length);
@@ -136,7 +140,7 @@ test("Hybrid H1 build emits a route-aware static document for every sitemap URL"
     expect(existsSync(documentPath), `${path} should have a static document`).toBe(true);
 
     const html = readFileSync(documentPath, "utf8");
-    const canonical = path === "/" ? `${productionBase}/` : `${productionBase}${path}`;
+    const canonical = productionCanonical(path);
     expect(html, `${path} should have route-aware title metadata`).toMatch(/<title>[^<]{8,}<\/title>/i);
     expect(html, `${path} should have route-aware description metadata`).toMatch(/<meta\s+name="description"\s+content="[^"]{40,}"/i);
     expect(html, `${path} should expose its exact production canonical`).toContain(
@@ -145,12 +149,26 @@ test("Hybrid H1 build emits a route-aware static document for every sitemap URL"
   }
 });
 
+test("runtime canonical URLs follow GitHub Pages trailing-slash URLs", async ({ page }) => {
+  await page.goto("kontakt");
+  const canonicalHref = await page.locator('link[rel="canonical"]').getAttribute("href");
+  const openGraphUrl = await page.locator('meta[property="og:url"]').getAttribute("content");
+  expect(canonicalHref).not.toBeNull();
+  expect(openGraphUrl).not.toBeNull();
+  expect(new URL(canonicalHref!).pathname).toBe("/DrGziut-webpage/kontakt/");
+  expect(new URL(openGraphUrl!).pathname).toBe("/DrGziut-webpage/kontakt/");
+  await page.goto("./");
+  const rootCanonical = await page.locator('link[rel="canonical"]').getAttribute("href");
+  expect(rootCanonical).not.toBeNull();
+  expect(new URL(rootCanonical!).pathname).toBe("/DrGziut-webpage/");
+});
+
 test("static generator rejects filesystem-normalized duplicate routes", () => {
   const sitemapPath = join(distRoot, "sitemap.xml");
   const originalSitemap = readFileSync(sitemapPath, "utf8");
   const collision = [
-    "  <url><loc>https://hubertgziut.github.io/DrGziut-webpage/foo//bar</loc></url>",
-    "  <url><loc>https://hubertgziut.github.io/DrGziut-webpage/foo/bar</loc></url>",
+    "  <url><loc>https://hubertgziut.github.io/DrGziut-webpage/foo//bar/</loc></url>",
+    "  <url><loc>https://hubertgziut.github.io/DrGziut-webpage/foo/bar/</loc></url>",
   ].join("\n");
   writeFileSync(sitemapPath, originalSitemap.replace("</urlset>", `${collision}\n</urlset>`));
   let result: ReturnType<typeof spawnSync> | undefined;
@@ -171,7 +189,7 @@ test("static generator rejects filesystem-normalized duplicate routes", () => {
 test("static generator rejects a single percent-encoded noncanonical route", () => {
   const sitemapPath = join(distRoot, "sitemap.xml");
   const originalSitemap = readFileSync(sitemapPath, "utf8");
-  const encodedRoute = "  <url><loc>https://hubertgziut.github.io/DrGziut-webpage/f%61q</loc></url>";
+  const encodedRoute = "  <url><loc>https://hubertgziut.github.io/DrGziut-webpage/f%61q/</loc></url>";
   writeFileSync(sitemapPath, originalSitemap.replace("</urlset>", `${encodedRoute}\n</urlset>`));
   let result: ReturnType<typeof spawnSync> | undefined;
   try {
@@ -186,6 +204,60 @@ test("static generator rejects a single percent-encoded noncanonical route", () 
   expect(result).toBeDefined();
   expect(result?.status).not.toBe(0);
   expect(`${result?.stdout ?? ""}${result?.stderr ?? ""}`).toContain("Non-canonical sitemap route");
+});
+
+test("static generator rejects raw URL aliases before URL normalization", () => {
+  const sitemapPath = join(distRoot, "sitemap.xml");
+  const originalSitemap = readFileSync(sitemapPath, "utf8");
+  const aliases = [
+    "https://hubertgziut.github.io/DrGziut-webpage/foo/../bar/",
+    "https://hubertgziut.github.io/DrGziut-webpage/foo/%2e%2e/bar/",
+    "https://hubertgziut.github.io:443/DrGziut-webpage/faq/",
+    "https://HUBERTGZIUT.GITHUB.IO/DrGziut-webpage/faq/",
+    "https://user:sensitive-marker@",
+  ];
+  for (const alias of aliases) {
+    const sitemapEntry = `  <url><loc>${alias}</loc></url>`;
+    writeFileSync(sitemapPath, originalSitemap.replace("</urlset>", `${sitemapEntry}\n</urlset>`));
+    let result: ReturnType<typeof spawnSync> | undefined;
+    try {
+      result = spawnSync(process.execPath, [join(projectRoot, "scripts/generate-static-routes.mjs")], {
+        cwd: projectRoot,
+        encoding: "utf8",
+        timeout: 30_000,
+      });
+    } finally {
+      writeFileSync(sitemapPath, originalSitemap);
+    }
+    expect(result).toBeDefined();
+    expect(result?.status).not.toBe(0);
+    const output = `${result?.stdout ?? ""}${result?.stderr ?? ""}`;
+    expect(output).toContain("Invalid sitemap URL for static generation");
+    expect(output).not.toContain("sensitive-marker");
+  }
+});
+
+test("static generator rejects a duplicated canonical sitemap route", () => {
+  const sitemapPath = join(distRoot, "sitemap.xml");
+  const originalSitemap = readFileSync(sitemapPath, "utf8");
+  const duplicateRoute =
+    "  <url><loc>https://hubertgziut.github.io/DrGziut-webpage/faq/</loc></url>";
+  writeFileSync(sitemapPath, originalSitemap.replace("</urlset>", `${duplicateRoute}\n</urlset>`));
+  let result: ReturnType<typeof spawnSync> | undefined;
+  try {
+    result = spawnSync(process.execPath, [join(projectRoot, "scripts/generate-static-routes.mjs")], {
+      cwd: projectRoot,
+      encoding: "utf8",
+      timeout: 30_000,
+    });
+  } finally {
+    writeFileSync(sitemapPath, originalSitemap);
+  }
+  expect(result).toBeDefined();
+  expect(result?.status).not.toBe(0);
+  expect(`${result?.stdout ?? ""}${result?.stderr ?? ""}`).toContain(
+    "Duplicate normalized sitemap route",
+  );
 });
 
 test("public assets exactly match the reviewed allowlist", () => {

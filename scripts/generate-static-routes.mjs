@@ -41,9 +41,15 @@ function safeFilePath(relativePath) {
 }
 
 const routeKeys = new Set();
-const routeInputs = sourceUrls.map((sourceUrl) => {
-  const productionUrl = new URL(sourceUrl);
+const routeInputs = sourceUrls.map((sourceUrl, sourceIndex) => {
+  let productionUrl;
+  try {
+    productionUrl = new URL(sourceUrl);
+  } catch {
+    throw new Error(`Invalid sitemap URL for static generation at index ${sourceIndex}.`);
+  }
   if (
+    productionUrl.toString() !== sourceUrl ||
     productionUrl.origin !== expectedSitemapOrigin ||
     productionUrl.username ||
     productionUrl.password ||
@@ -51,25 +57,26 @@ const routeInputs = sourceUrls.map((sourceUrl) => {
     productionUrl.hash ||
     !productionUrl.pathname.startsWith(basePath)
   ) {
-    throw new Error(`Invalid sitemap URL for static generation: ${sourceUrl}`);
+    throw new Error(`Invalid sitemap URL for static generation at index ${sourceIndex}.`);
   }
 
   const decodedRelativePath = decodeURIComponent(productionUrl.pathname.slice(basePath.length));
   const relativePath = decodedRelativePath.replace(/^\/+|\/+$/g, "");
   const normalizedRelativePath = relativePath ? path.posix.normalize(relativePath) : "";
-  const canonicalPathname = `${basePath}${normalizedRelativePath}`;
+  const canonicalRelativePath = normalizedRelativePath ? `${normalizedRelativePath}/` : "";
+  const canonicalPathname = `${basePath}${canonicalRelativePath}`;
   if (
     productionUrl.pathname !== canonicalPathname ||
-    decodedRelativePath !== relativePath ||
+    decodedRelativePath !== canonicalRelativePath ||
     normalizedRelativePath !== relativePath ||
     !/^[a-z0-9/-]*$/.test(relativePath)
   ) {
-    throw new Error(`Non-canonical sitemap route: ${sourceUrl}`);
+    throw new Error(`Non-canonical sitemap route at index ${sourceIndex}.`);
   }
   safeFilePath(normalizedRelativePath);
   const routeKey = normalizedRelativePath.toLocaleLowerCase("en-US");
   if (routeKeys.has(routeKey)) {
-    throw new Error(`Duplicate normalized sitemap route: ${sourceUrl}`);
+    throw new Error(`Duplicate normalized sitemap route at index ${sourceIndex}.`);
   }
   routeKeys.add(routeKey);
   return { sourceUrl, relativePath: normalizedRelativePath, localPath: productionUrl.pathname };

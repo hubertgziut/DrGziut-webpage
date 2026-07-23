@@ -37,7 +37,9 @@ export default function Seo({ title, description, noIndex = false }: SeoProps) {
   useEffect(() => {
     const resolvedTitle = t(title);
     const resolvedDescription = t(description);
-    const routePath = `${import.meta.env.BASE_URL.replace(/\/$/, "")}${location.pathname}`;
+    const canonicalPathname =
+      location.pathname === "/" ? "/" : `${location.pathname.replace(/\/+$/, "")}/`;
+    const routePath = `${import.meta.env.BASE_URL.replace(/\/$/, "")}${canonicalPathname}`;
     const canonicalUrl = new URL(routePath, window.location.origin).toString();
 
     document.title = resolvedTitle;
