@@ -498,7 +498,30 @@ main:focus,
 .faq-filters button[aria-pressed="true"] { border-color: var(--sage); color: var(--ink); background: var(--sage); }
 .faq-filters button:hover,
 .faq-filters button:focus-visible { border-color: var(--brass); color: var(--ivory); }
-.faq-groups { grid-column: 2; grid-row: 1 / span 2; }
+.faq-physician-figure {
+  grid-column: 1;
+  grid-row: 3;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line2);
+  background: var(--surface);
+}
+.faq-physician-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center 32%;
+}
+.faq-physician-figure figcaption {
+  padding: 1rem 1.1rem;
+  color: var(--muted);
+  font: 600 .62rem/1.45 var(--sans);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.faq-groups { grid-column: 2; grid-row: 1 / span 3; }
 .faq-item > button { min-height: 76px; }
 
 .contact-page { align-items: start; }
@@ -554,6 +577,7 @@ main:focus,
   .procedure-local-nav::before { left: 10rem; }
   .faq-section { grid-template-columns: 1fr; }
   .faq-filters,
+  .faq-physician-figure,
   .faq-groups { grid-column: 1; grid-row: auto; }
   .contact-page .contact-copy { position: static; }
 }

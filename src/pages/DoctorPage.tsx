@@ -34,10 +34,12 @@ export default function DoctorPage() {
       <section className="doctor editorial-section" aria-labelledby="doctor-biography-title">
         <figure className="doctor-portrait">
           <img
+            data-testid="doctor-portrait-image"
             src={assetUrl("/assets/brand/doctor-hubert.jpg")}
             alt={t(copy.portraitAlt)}
-            width="1160"
-            height="1450"
+            width="960"
+            height="1280"
+            loading="lazy"
             decoding="async"
           />
         </figure>

@@ -208,8 +208,16 @@ main > section:not(.hero) { background: var(--surface) !important; }
 .doctor-portrait,
 .doctor-portrait img,
 .doctor-portrait::before { border-radius: var(--radius-shell); }
-.doctor-portrait img { filter: saturate(.58) contrast(.96) brightness(1.06); }
+.doctor-portrait img { object-position: center 38%; filter: none; }
 .doctor-portrait::before { border-color: rgba(146,114,69,.28); }
+.faq-physician-figure {
+  border-color: rgba(255,255,255,.78);
+  border-radius: var(--radius-card);
+  background: var(--paper-strong);
+  box-shadow: 0 12px 36px rgba(64,55,42,.08);
+}
+.faq-physician-figure img { filter: none; }
+.faq-physician-figure figcaption { color: var(--faint); }
 .contact-band,
 .procedure-safety,
 .category-index,

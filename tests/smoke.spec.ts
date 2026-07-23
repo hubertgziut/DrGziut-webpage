@@ -40,6 +40,7 @@ const allowedAssetPaths = [
   "bg-aesthetic.jpg",
   "bg-surgery.jpg",
   "bg-tech.jpg",
+  "brand/doctor-hubert-faq.jpg",
   "brand/doctor-hubert.jpg",
   "clinic.jpg",
   "hero.jpg",
@@ -266,6 +267,41 @@ test("public assets exactly match the reviewed allowlist", () => {
     .sort();
 
   expect(actualAssets).toEqual([...allowedAssetPaths].sort());
+});
+
+test("reviewed physician photos render with stable intrinsic geometry on the doctor page", async ({ page }) => {
+  await page.goto("lekarz");
+  const portrait = page.getByTestId("doctor-portrait-image");
+
+  await expect(portrait).toBeVisible();
+  await expect(portrait).toHaveAttribute("src", /\/assets\/brand\/doctor-hubert\.jpg$/);
+  await expect(portrait).toHaveAttribute("alt", "Lekarz Hubert Gziut, specjalista chirurgii plastycznej");
+  await expect(portrait).toHaveAttribute("width", "960");
+  await expect(portrait).toHaveAttribute("height", "1280");
+  await expect(portrait).toHaveAttribute("loading", "lazy");
+  await expect(portrait).toHaveCSS("object-fit", "cover");
+  expect(await portrait.evaluate((image: HTMLImageElement) => [image.naturalWidth, image.naturalHeight])).toEqual([960, 1280]);
+
+  await page.getByTestId("language-en").click();
+  await expect(portrait).toHaveAttribute("alt", "Hubert Gziut, MD, plastic surgery specialist");
+});
+
+test("reviewed physician photos add an accessible editorial image to FAQ", async ({ page }) => {
+  await page.goto("faq");
+  const image = page.getByTestId("faq-physician-image");
+
+  await expect(image).toBeVisible();
+  await expect(image).toHaveAttribute("src", /\/assets\/brand\/doctor-hubert-faq\.jpg$/);
+  await expect(image).toHaveAttribute("alt", "Lekarz Hubert Gziut w sali operacyjnej");
+  await expect(image).toHaveAttribute("width", "960");
+  await expect(image).toHaveAttribute("height", "1280");
+  await expect(image).toHaveAttribute("loading", "lazy");
+  await expect(image).toHaveCSS("object-fit", "cover");
+  expect(await image.evaluate((node: HTMLImageElement) => [node.naturalWidth, node.naturalHeight])).toEqual([960, 1280]);
+
+  await page.getByTestId("language-en").click();
+  await expect(image).toHaveAttribute("alt", "Hubert Gziut, MD, in an operating room");
+  await expect(page.locator(".faq-item")).toHaveCount(6);
 });
 
 test("desktop offer menu links to both disciplines", async ({ page }) => {

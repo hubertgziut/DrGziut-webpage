@@ -131,10 +131,12 @@ export default function HomePage() {
       <section className="doctor editorial-section" aria-labelledby="doctor-teaser-title">
         <figure className="doctor-portrait">
           <img
+            data-testid="doctor-portrait-image"
             src={assetUrl("/assets/brand/doctor-hubert.jpg")}
             alt={t(pageContent.doctor.portraitAlt)}
-            width="1160"
-            height="1450"
+            width="960"
+            height="1280"
+            loading="lazy"
             decoding="async"
           />
         </figure>

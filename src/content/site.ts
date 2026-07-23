@@ -23,6 +23,7 @@ export type SiteAsset =
   | "/assets/clinic.jpg"
   | "/assets/precision.jpg"
   | "/assets/bg-tech.jpg"
+  | "/assets/brand/doctor-hubert-faq.jpg"
   | "/assets/brand/doctor-hubert.jpg";
 
 export type SeoCopy = Readonly<{
@@ -858,6 +859,8 @@ export const pageContent = {
     eyebrow: { pl: "FAQ", en: "FAQ" },
     title: { pl: "Pytania, które warto zadać.", en: "Questions worth asking." },
     summary: { pl: "Odpowiedzi mają charakter edukacyjny. Indywidualne zalecenia i kwalifikacja wymagają konsultacji oraz badania.", en: "Answers are educational. Individual recommendations and assessment require consultation and examination." },
+    imageAlt: { pl: "Lekarz Hubert Gziut w sali operacyjnej", en: "Hubert Gziut, MD, in an operating room" },
+    imageCaption: { pl: "lek. Hubert Gziut · specjalista chirurgii plastycznej", en: "Hubert Gziut, MD · plastic surgery specialist" },
     filterLabel: { pl: "Kategorie pytań", en: "Question categories" },
     allFilter: { pl: "Wszystkie", en: "All" },
     groups: [

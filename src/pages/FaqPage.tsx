@@ -4,6 +4,7 @@ import PageHero from "../components/PageHero";
 import Seo from "../components/Seo";
 import { pageContent, siteContent } from "../content/site";
 import { useT } from "../i18n";
+import { assetUrl } from "../lib/assets";
 
 type ActiveGroup = "all" | number;
 
@@ -71,6 +72,19 @@ export default function FaqPage() {
             </button>
           ))}
         </div>
+
+        <figure className="faq-physician-figure">
+          <img
+            data-testid="faq-physician-image"
+            src={assetUrl("/assets/brand/doctor-hubert-faq.jpg")}
+            alt={t(copy.imageAlt)}
+            width="960"
+            height="1280"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>{t(copy.imageCaption)}</figcaption>
+        </figure>
 
         <div className="faq-groups" aria-live="polite">
           {visibleGroups.map(({ group, groupIndex }) => (
